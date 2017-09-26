@@ -1,0 +1,15 @@
+.questions{
+	border-bottom: solid #000000;
+	padding-bottom: 5px;
+}
+.questions h1{
+	text-align: center;
+}
+
+.chart{
+	background-color: #3745b2;
+	height: 28px;
+	color:white;
+	text-align: right;
+	margin-bottom: 5px;
+}
