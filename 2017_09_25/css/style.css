@@ -13,3 +13,17 @@
 	text-align: right;
 	margin-bottom: 5px;
 }
+#q2 .chart{
+	background-color: #f73c2e !important;
+	
+}
+
+#q3 .chart{
+	background-color: #fcb211 !important;
+	color:black !important;
+}
+
+#q4 .chart{
+	background-color: #e11bf7 !important;
+	
+}
