@@ -26,7 +26,7 @@ function render(dados){
 	d3.select("#q1").selectAll(".chart")
 		.data(dados)
 			.style("width",function(d){
-				return (d.Worldwide_Gross_M) + "px";
+				return (d.Worldwide_Gross_M/5) + "px";
 			})
 			.select("span")
 				.text(function(d){
