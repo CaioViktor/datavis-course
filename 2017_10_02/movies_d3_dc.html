@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Carregando dados de um arquivo csv</title>
+    <link rel="stylesheet" href="css/dc.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/crossfilter.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/dc.js" charset="utf-8"></script>
+
+</head>
+<body>
+    <div id="movies1">
+        <h1> Parte 2 - Movies dataset</h1>
+        <h2>Bilheteria por ano</h2></div>
+    </div>
+    
+    <div id="movies2">
+    <hr>
+        <h2>Bilheteria por gênero</h2>
+    </div>
+	<script type="text/javascript">
+        //Q2.1
+        var barChart = dc.barChart("#movies1");
+        var barChartGenero = dc.barChart("#movies2");
+
+        d3.json("movies.json",function(data){
+            var facts = crossfilter(data);
+
+        //Q2.1
+            var yearDim = facts.dimension(function(d){
+                return d.Year;
+            });
+
+            var groupYear = yearDim.group().reduceSum(function(d){
+                return d.Worldwide_Gross_M;
+            });
+            
+            
+            barChart.width(800)
+                    .height(400)
+                    .margins({top: 50, right: 50, bottom: 25, left: 40})
+                    .dimension(yearDim)
+                    .group(groupYear)
+                    .x(d3.scale.ordinal())
+                    .xUnits(dc.units.ordinal)
+                    .xAxisLabel('Ano')
+                    .yAxisLabel('Total Bilheteria(M)');
+            barChart.render();
+        
+        //Q2.2
+            var genreDim = facts.dimension(function(d){
+                return d.Genre;
+            });
+
+            var groupGenre = genreDim.group().reduceSum(function(d){
+                return d.Worldwide_Gross_M;
+            });
+
+            barChartGenero.width(800)
+                    .height(400)
+                    .margins({top: 50, right: 50, bottom: 25, left: 40})
+                    .dimension(genreDim)
+                    .group(groupGenre)
+                    .x(d3.scale.ordinal())
+                    .xUnits(dc.units.ordinal)
+                    .xAxisLabel("Gênero")
+                    .yAxisLabel("Total Bilheteria(M)");
+
+            barChartGenero.render();
+
+        });
+
+
+
+	</script>			
+</body>
+</html>
