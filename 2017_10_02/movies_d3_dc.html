@@ -24,6 +24,7 @@
         //Q2.1
         var barChart = dc.barChart("#movies1");
         var barChartGenero = dc.barChart("#movies2");
+        barChartGenero.ordering(function(d) { return -d.value; })
 
         d3.json("movies.json",function(data){
             var facts = crossfilter(data);
@@ -57,7 +58,6 @@
             var groupGenre = genreDim.group().reduceSum(function(d){
                 return d.Worldwide_Gross_M;
             });
-
             barChartGenero.width(800)
                     .height(400)
                     .margins({top: 50, right: 50, bottom: 25, left: 40})
