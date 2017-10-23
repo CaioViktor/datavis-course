@@ -2,9 +2,57 @@
 <html lang="pt-br">
 	<head>
 		<meta charset="utf-8">
-		
+		 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="crossorigin=""/>
+
+        <!-- Custom styles for this template -->
+        <link  rel="stylesheet" href="css/starter-template.css">
+        <link rel="stylesheet" href="css/dc.css">
+        <link rel="stylesheet" href="css/styles.css">
+        <script src="js/crossfilter.js" charset="utf-8"></script>
+        <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script src="js/dc.js" charset="utf-8"></script>
+        <!-- Make sure you put this AFTER Leaflet's CSS -->
+        <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="crossorigin=""></script>
 	</head>
 	<body>
+		<div id="mapid"></div>
+		<div id="barras"></div>
+		<div id="linhas"></div>
+		<script>
+			var map = L.map('mapid').setView([41.848043, -87.651786],10);
+			L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a>contributors',maxZoom: 17
+            }).addTo(map);
 
+            var types = {'HOMICIDE':'#ed1a1a','BURGLARY':'#e2d514','ROBBERY':'#25db6b'};
+            var points = [];
+
+
+            d3.csv("Crimes_Chicago_Sep2017.csv",function(data){
+            	var dtgFormat = d3.time.format.utc("%m/%d/%Y %h:%M:%S %A");
+            	data.forEach(function(d){
+            		d.dtg = dtgFormat.parse(d.Date);
+            		var aux = d.Location.replace("(","").replace(")","");
+            		d.lat = +aux.substr(0,aux.indexOf(","));
+            		d.long = +aux.substr(aux.indexOf(",")+1,aux.length);
+            		var circle = L.circle([d.lat, d.long], 100, {
+	                  color: types[d['Primary Type']],
+	                  weight: 1,
+	                  fillColor: types[d['Primary Type']],
+	                  fillOpacity: 1
+	                }).addTo(map);
+	                // circle.bindPopup("Magnitude:"+d.mag+"<br/>Time:"+d.dtg);
+	                points.push(circle);
+            	});
+
+            	var facts = crossfilter(data);
+
+            });
+		</script>
 	</body>
 </html>
+<!-- 41.848043, -87.651786 -->
