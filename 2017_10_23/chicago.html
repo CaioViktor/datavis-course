@@ -17,28 +17,33 @@
         <script src="js/dc.js" charset="utf-8"></script>
         <!-- Make sure you put this AFTER Leaflet's CSS -->
         <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="crossorigin=""></script>
+        <title>Criminalidade em chicago</title>
 	</head>
 	<body>
+        <h1>Mapa da criminalidade</h1>
 		<div id="mapid"></div>
+        <h1>Ocorrências por tipo</h1>
 		<div id="barras"></div>
-		<div id="linhas"></div>
+        
+		<div id="linhas"><h1>Ocorrências por tipo no período</h1></div>
 		<script>
 			var map = L.map('mapid').setView([41.848043, -87.651786],10);
 			L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-              attribution: '&copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a>contributors',maxZoom: 17
+              attribution: '&copy; <a href="http://www.openstreetmap.org/">OpenStreetMap</a>contributors',maxZoom: 10,
+                minZoom:10
             }).addTo(map);
-
+            map.dragging.disable();
             var types = {'HOMICIDE':'#ed1a1a','BURGLARY':'#e2d514','ROBBERY':'#25db6b'};
             var points = [];
 
             var barras = dc.barChart("#barras");
-            var linhas = dc.compositeChart("#linhas");
+            var linhas = dc.seriesChart("#linhas");
 
 
             d3.csv("Crimes_Chicago_Sep2017.csv",function(data){
-            	var dtgFormat = d3.time.format.utc("%m/%d/%Y %I:%M:%S %p");
+            	var dtgFormat = d3.time.format.utc("%m/%d/%Y");
             	data.forEach(function(d){
-            		d.dtg = dtgFormat.parse(d.Date);
+            		d.dtg = dtgFormat.parse(d.Date.split(" ")[0]);
             		var aux = d.Location.replace("(","").replace(")","");
             		d.lat = +aux.substr(0,aux.indexOf(","));
             		d.long = +aux.substr(aux.indexOf(",")+1,aux.length);
@@ -76,52 +81,74 @@
                         });
                     });
 
+                    // console.log(data);
+                    // var temporalDim = facts.dimension(function(d){
+                    //     d.dtg.setDate(1);
 
-                    var temporalDim = facts.dimension(function(d){
-                        return d.dtg;
+                    //     return d.dtg;
+                    // });
+                    // var temporalHOMICIDEGroup = temporalDim.group().reduceSum(function(d){
+                    //     if(d['Primary Type'] == 'HOMICIDE')
+                    //         return 1;
+                    //     else 
+                    //         return 0;
+                    // });
+                    // var temporalBURGLARYGroup = temporalDim.group().reduceSum(function(d){
+                    //     if(d['Primary Type'] == 'BURGLARY')
+                    //         return 1;
+                    //     else 
+                    //         return 0;
+                    // });
+                    // var temporalROBBERYGroup = temporalDim.group().reduceSum(function(d){
+                    //     if(d['Primary Type'] == 'ROBBERY')
+                    //         return 1;
+                    //     else 
+                    //         return 0;
+                    // });
+
+                    // linhas.width(800)
+                    //  .height(400)
+                    //  .margins({top: 50, right: 50, bottom: 25, left: 40})
+                    //  .dimension(temporalDim)
+                    //  .x(d3.time.scale().domain(d3.extent(data,function(d){return d.dtg})))
+                    //  .xUnits(d3.time.days)
+                    //  .renderHorizontalGridLines(true)
+                    //  .legend(dc.legend().x(700).y(5).itemHeight(13).gap(5))
+                    //  .brushOn(false) 
+                    //  .yAxisLabel('Ocorrências')   
+                    //  .compose([
+                    //     dc.lineChart(linhas)
+                    //               .group(temporalHOMICIDEGroup, 'HOMICIDE')
+                    //               .ordinalColors([types['HOMICIDE']]),
+                    //     dc.lineChart(linhas)
+                    //               .group(temporalBURGLARYGroup, 'BURGLARY')
+                    //               .ordinalColors([types['BURGLARY']]),
+                    //     dc.lineChart(linhas)
+                    //               .group(temporalROBBERYGroup, 'ROBBERY')
+                    //               .ordinalColors([types['ROBBERY']])]);
+
+                    var seriesDim = facts.dimension(function(d){
+                        return [d['Primary Type'],d.dtg];
                     });
-                    var temporalHOMICIDEGroup = temporalDim.group().reduceSum(function(d){
-                        if(d['Primary Type'] == 'HOMICIDE')
-                            return 1;
-                        else 
-                            return 0;
-                    });
-                    var temporalBURGLARYGroup = temporalDim.group().reduceSum(function(d){
-                        if(d['Primary Type'] == 'BURGLARY')
-                            return 1;
-                        else 
-                            return 0;
-                    });
-                    var temporalROBBERYGroup = temporalDim.group().reduceSum(function(d){
-                        if(d['Primary Type'] == 'ROBBERY')
-                            return 1;
-                        else 
-                            return 0;
-                    });
-
-                    linhas.width(800)
-                     .height(400)
-                     .margins({top: 50, right: 50, bottom: 25, left: 40})
-                     .dimension(temporalDim)
-                     .x(d3.time.scale().domain(d3.extent(data,function(d){return d.dtg})))
-                     .xUnits(d3.time.days)
-                     .renderHorizontalGridLines(true)
-                     .legend(dc.legend().x(700).y(5).itemHeight(13).gap(5))
-                     .brushOn(false) 
-                     .yAxisLabel('Ocorrências')   
-                     .compose([
-                        dc.lineChart(linhas)
-                                  .group(temporalHOMICIDEGroup, 'HOMICIDE')
-                                  .ordinalColors([types['HOMICIDE']]),
-                        dc.lineChart(linhas)
-                                  .group(temporalBURGLARYGroup, 'BURGLARY')
-                                  .ordinalColors([types['BURGLARY']]),
-                        dc.lineChart(linhas)
-                                  .group(temporalROBBERYGroup, 'ROBBERY')
-                                  .ordinalColors([types['ROBBERY']])]);
-
-
-
+                    var seriesGroup = seriesDim.group();
+                    linhas.width(768)
+                        .height(480)
+                        .chart(function(c) { return dc.lineChart(c).interpolate('cardinal'); })
+                        .x(d3.time.scale().domain(d3.extent(data,function(d){return d.dtg})))
+                        .brushOn(false)
+                        .yAxisLabel("Ocorrências")
+                        .xAxisLabel("Tempo")
+                        .clipPadding(10)
+                        .elasticY(true)
+                        .dimension(seriesDim)
+                        .group(seriesGroup)
+                        .mouseZoomable(true)
+                        .seriesAccessor(function(d) {return "Expt: " + d.key[0];})
+                        .keyAccessor(function(d) {return +d.key[1];})
+                        .valueAccessor(function(d) {return +d.value;})
+                        .ordinalColors([types['BURGLARY'],types['HOMICIDE'],types['ROBBERY']])
+                        .legend(dc.legend().x(350).y(300).itemHeight(13).gap(5));
+                        linhas.margins().left += 40;
                 dc.renderAll();
 
             });
