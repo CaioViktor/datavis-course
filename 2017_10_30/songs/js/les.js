@@ -31,10 +31,21 @@ function Network() {
     var circleRadius, countExtent;
     // initialize circle radius scale
     //AQUI
-    countExtent = d3.extent(data.nodes, function(d) {
-      return d.group;
+    var nodesMap = mapNodes(data.nodes);
+    // Then we will switch links to point to node objects instead of id's
+    data.links.forEach(function(l) {
+      l.source = nodesMap.get(l.source);
+      l.target = nodesMap.get(l.target);
     });
-    circleRadius = d3.scale.sqrt().range([3, 15]).domain(countExtent);
+    data.links.forEach(function(d){
+          d.source.degree = (d.source.degree || 0) + 1;
+          d.target.degree = (d.target.degree || 0) + 1;
+    });
+    // console.log(data);
+    countExtent = d3.extent(data.nodes, function(d) {
+      return d.degree;
+    });
+    circleRadius = d3.scale.linear().range([3, 15]).domain(countExtent);
     //First let's randomly dispose data.nodes (x/y) within the the width/height
     // of the visualization and set a fixed radius for now
     data.nodes.forEach(function(n) {
@@ -45,17 +56,11 @@ function Network() {
       n.y = randomnumber = Math.floor(Math.random() * height);
       // add radius to the node so we can use it later
       
-      n.radius = circleRadius(n.group);
+      n.radius = circleRadius(n.degree);
     });
     // Then we will create a map with
     // id's -> node objects
     // using the mapNodes function above and store it in the nodesMap variable.
-    var nodesMap = mapNodes(data.nodes);
-// Then we will switch links to point to node objects instead of id's
-    data.links.forEach(function(l) {
-      l.source = nodesMap.get(l.source);
-      l.target = nodesMap.get(l.target);
-    });
 
     // Then we will switch links to point to node objects instead of id's
 
@@ -66,9 +71,9 @@ function Network() {
   // Mouseover tooltip function
   function showDetails(d, i) {
     var content;
-    content = '<p class="main">' + d.name + '</span></p>';
+    content = '<p class="main">Personagem: ' + d.id + '</span></p>';
     content += '<hr class="tooltip-hr">';
-    content += '<p class="main">' + d.artist + '</span></p>';
+    content += '<p class="main">Grau: ' + d.degree + '</span></p>';
     tooltip.showTooltip(content, d3.event);
 
     // highlight the node being moused over
@@ -100,7 +105,9 @@ function Network() {
           return d.y;})
         .attr("r", function(d) {
           return d.radius;})
-        .style("stroke-width", 1.0);
+        .style("stroke-width", 1.0)
+        .style("fill", function(n) {
+          return "#6801bc";});
     node.on("mouseover", showDetails).on("mouseout", hideDetails);
   }
 
