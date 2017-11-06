@@ -92,16 +92,16 @@
 	// get color depending on number of cases
     let cor = d3.rgb("green");
 
-    let brewerColors = [cor.brighter(3),cor.brighter(2),cor.brighter(),cor,cor.darker(),cor.darker(2),cor.darker(3),cor.darker(4)];
+    let brewerColors = [cor.brighter(2),cor.brighter(1),cor.brighter(0.5),cor,cor.darker(),cor.darker(2),cor.darker(3),cor.darker(4)];
     let domainValues  = [0,5,20,40,50,90,200,425];
 	var quantize = d3.scale.linear()
     .domain(domainValues)
     .range(brewerColors);
 
     var legendasCores = {}
-    legendasCores[cor.brighter(3).toString()] = "0-5";
-    legendasCores[cor.brighter(2).toString()] = "5-20";
-    legendasCores[cor.brighter().toString()] = "20-40";
+    legendasCores[cor.brighter(2).toString()] = "0-5";
+    legendasCores[cor.brighter(1).toString()] = "5-20";
+    legendasCores[cor.brighter(0.5).toString()] = "20-40";
     legendasCores[cor.toString()] = "40-50";
     legendasCores[cor.darker().toString()] = "50-90";
     legendasCores[cor.darker(2).toString()] = "90-200";
