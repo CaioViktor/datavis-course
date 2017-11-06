@@ -65,7 +65,7 @@
 </div>
 <script type="text/javascript" src="data/bairros.js"></script>
 <script type="text/javascript">
-    let brewerColors = colorbrewer.Blues[5];
+    let brewerColors = colorbrewer.Greens[9];
 	
 	let map = L.map('map').setView([-3.792614,-38.515877], 12);
 	L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
@@ -91,8 +91,8 @@
 	info.addTo(map);
 	
 	// get color depending on number of cases
-	let quantize = d3.scale.quantize()
-    .domain([0, 70])
+	var quantize = d3.scale.quantize()
+    .domain([0, 425])
     .range(brewerColors);
 
 	function style(feature) {
@@ -145,9 +145,20 @@
 	d3.csv("data/homicidios_2012.csv", function(data){
         //format data
         data.forEach(function(d) {
-            homicidiosByName.set(d.Bairro,+d.Homicidios);
+        	var pop = d.Populacao;
+        	if(pop != 0){
+
+	        	d.hp = Math.round((((+d.Homicidios))*100000)/(pop));
+	            homicidiosByName.set(d.Bairro,Math.round((((+d.Homicidios))*100000)/(pop)));
+        	}
+        	else{
+        		d.hp = +d.Homicidios;
+	            homicidiosByName.set(d.Bairro,+d.Homicidios);
+        	}
+        	// console.log(d.hp);
         });
 		
+		// console.log(d3.extent(data,function(d){return d.hp;}));
 		//bairrosData is defined in file bairros.js		 		
 		geojson = L.geoJson(bairrosData, {
 				style: style,
