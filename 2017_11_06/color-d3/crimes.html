@@ -65,7 +65,6 @@
 </div>
 <script type="text/javascript" src="data/bairros.js"></script>
 <script type="text/javascript">
-    let brewerColors = colorbrewer.Greens[9];
 	
 	let map = L.map('map').setView([-3.792614,-38.515877], 12);
 	L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
@@ -91,9 +90,30 @@
 	info.addTo(map);
 	
 	// get color depending on number of cases
-	var quantize = d3.scale.quantize()
-    .domain([0, 425])
+    let cor = d3.rgb("green");
+
+    let brewerColors = [cor.brighter(3),cor.brighter(2),cor.brighter(),cor,cor.darker(),cor.darker(2),cor.darker(3),cor.darker(4)];
+    let domainValues  = [0,5,20,40,50,90,200,425];
+	var quantize = d3.scale.linear()
+    .domain(domainValues)
     .range(brewerColors);
+
+    var legendasCores = {}
+    legendasCores[cor.brighter(3).toString()] = "0-5";
+    legendasCores[cor.brighter(2).toString()] = "5-20";
+    legendasCores[cor.brighter().toString()] = "20-40";
+    legendasCores[cor.toString()] = "40-50";
+    legendasCores[cor.darker().toString()] = "50-90";
+    legendasCores[cor.darker(2).toString()] = "90-200";
+    legendasCores[cor.darker(3).toString()] = "200-425";
+    legendasCores[cor.darker(4).toString()] = "425";
+
+    
+    
+    
+    
+    
+
 
 	function style(feature) {
 		 return {
@@ -178,10 +198,10 @@
 
 		for (let i = 0; i < n; i++) {
 			let c = brewerColors[i];
-            let fromto = quantize.invertExtent(c);
+            let fromto = legendasCores[c];
 			labels.push(
 				'<i style="background:' + brewerColors[i] + '"></i> ' +
-				d3.round(fromto[0]) + (d3.round(fromto[1]) ? '&ndash;' + d3.round(fromto[1]) : '+'));
+				fromto);
 		}
 
 		div.innerHTML = labels.join('<br>');
