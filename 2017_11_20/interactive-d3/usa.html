@@ -113,9 +113,9 @@ function ready(error, us) {
           .attr("stroke","#ffff00");
           var coordinates = [0, 0];
 
-          coordinates = d3.mouse(this); // obtém a posição do mouse relativa a this
-          var x = coordinates[0] + 400;
-          var y = coordinates[1] + 60; // descontando a posição do svg
+           coordinates = d3.mouse($("body")[0]); // obtém a posição do mouse relativa ao body
+          var x = coordinates[0];
+          var y = coordinates[1]; 
 
           showTooltip(d.id, x, y);
       })
